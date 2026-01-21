@@ -1,6 +1,6 @@
 ### 
 
-### **Windows Server Domain, Hardening & Safety rules**
+### **Windows Server **
 
 This hardening focuses on Windows Server endpoints in a domain environment.  
 Notes:   
