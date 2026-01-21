@@ -1,5 +1,3 @@
-Here you can say lots of fun things about your site.
-
-Maybe say a some things about yourself.
-
-Or maybe what you plan to blog about.
+Hello good folks! This is a blog to follow along my learning path
+My name is Vexy and i'am a cyber security analyst student in Higher Vocational Education (HVE) Located in sweden.
+The scripts or applications mentioned in the blog can be found in my other repos under [github](https://github.com/lilvexy)
