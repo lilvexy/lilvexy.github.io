@@ -65,3 +65,18 @@ hr {
   font-size: 0.8em;
   color: #666;
 }
+.post-excerpt {
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.read-more {
+  font-size: 14px;
+  color: #007acc;
+  text-decoration: none;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
