@@ -1,0 +1,33 @@
+---
+layout: default
+title: Bloggarkiv
+permalink: /archive/
+---
+<div class="container">
+  <h1>Bloggarkiv</h1>
+  
+  {% for post in site.posts %}
+    <article class="post-item">
+      <a href="{{ post.url }}">
+        <h3>{{ post.title }}</h3>
+      </a>
+      <div class="post-meta">{{ post.date | date: "%d %B %Y" }}</div>
+
+      {% if post.tags %}
+        <div class="post-tags">
+          {% for tag in post.tags %}
+            <a class="tag" href="/tags/{{ tag | downcase | replace: ' ', '-' }}/">{{ tag }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <p class="post-excerpt">
+        {% if post.intro %}
+          {{ post.intro }}
+        {% else %}
+          {{ post.content | strip_html | truncate: 140 }}
+        {% endif %}
+      </p>
+    </article>
+  {% endfor %}
+</div>
