@@ -1,6 +1,11 @@
-### 
-
-### **Windows Server **
+---
+layout: post
+title: "Windows server"
+date: 2026-02-12
+tags: [Windows, Security]
+intro: "Hardening of windows domain"
+---
+### Windows Server ### 
 
 This hardening focuses on Windows Server endpoints in a domain environment.  
 Notes:   
