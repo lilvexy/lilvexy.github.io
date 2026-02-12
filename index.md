@@ -5,7 +5,7 @@ title: Hem
 
 <section class="hero">
   <div class="container">
-    <h1>Hello, Welcome to my blog </h1>
+    <h1>Hej, jag är [Ditt Namn]</h1>
     <p class="tagline">
       IT-student med fokus på nätverk, säkerhet och infrastruktur.
     </p>
@@ -27,6 +27,15 @@ title: Hem
         <div class="post-meta">
           {{ post.date | date: "%d %B %Y" }}
         </div>
+
+        <!-- Taggar -->
+        {% if post.tags %}
+          <div class="post-tags">
+            {% for tag in post.tags %}
+              <a class="tag" href="/tags/{{ tag | downcase | replace: ' ', '-' }}/">{{ tag }}</a>
+            {% endfor %}
+          </div>
+        {% endif %}
 
         <!-- Kort teaser -->
         {% if post.intro %}
