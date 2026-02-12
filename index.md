@@ -5,9 +5,9 @@ title: Hem
 
 <section class="hero">
   <div class="container">
-    <h1>Hej, jag är [Ditt Namn]</h1>
+    <h1>Hello, Welcome to my blog </h1>
     <p class="tagline">
-      IT-student med fokus på nätverk, säkerhet och infrastruktur.
+    I will share my learning experiances and projects here"
     </p>
   </div>
 </section>
