@@ -1,3 +1,11 @@
+---
+layout: post
+title: "Virtual Network"
+date: 2026-02-12
+tags: [Lab, Test]
+intro: "Virtualisera och konfigurera nätverk"
+---
+
 ### **Konfigurering av Virtuell Nätverk** 
 
 Jag har valt att använda Hyper-V och satt upp en virtuell Vyos Router med eth0 som extern switch, som använder min dators NIC ut till WAN som standard. Eth1 och eth2 kommunicerar lokalt, och med hjälp av NAT får dessa anslutning via eth0 och därmed internetåtkomst. Dessa implementerades genom att först skapa en virtuell router och sedan lägga till tre switchar: eth0, eth1 och eth2. Eth0 delar min dators internetanslutning, medan eth1 och eth2 är privata switchar som endast används lokalt. NAT på eth0 skyddar interna nätverk genom att dölja privata IP-adresser mot WAN, vilket minskar risken för direkta attacker från internet. Privata LAN-switchar (eth1, eth2) gör att intern trafik inte exponeras mot WAN.
