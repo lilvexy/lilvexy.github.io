@@ -1,3 +1,21 @@
-Hello good folks! This is a blog to follow along my learning path
-My name is Vexy and i'am a cyber security analyst student in Higher Vocational Education (HVE) Located in sweden.
-The scripts or applications mentioned in the blog can be found in my other repos under [github](https://github.com/lilvexy)
+---
+layout: home
+title: "Hem"
+---
+<section class="hero">
+  <h1>Hello, Welcome to Vexy´s Blog </h1>
+  <p>IT-entusiast in Network, systems and security.</p>
+</section>
+
+<section class="posts">
+  <h2>Latest post</h2>
+  {% for post in site.posts %}
+    <article class="post-preview">
+      <a href="{{ post.url }}">
+        <h3>{{ post.title }}</h3>
+      </a>
+      <p class="meta">{{ post.date | date: "%Y-%m-%d" }}</p>
+      <p>{{ post.excerpt }}</p>
+    </article>
+  {% endfor %}
+</section>
