@@ -2,7 +2,7 @@
 layout: post
 title: "Virtual Network"
 date: 2026-02-12
-tags: [Lab, Test]
+tags: [Network]
 intro: "Virtualisera och konfigurera nätverk"
 ---
 
