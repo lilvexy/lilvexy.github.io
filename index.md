@@ -7,7 +7,7 @@ title: Hem
   <div class="container">
     <h1>Hello, Welcome to my blog </h1>
     <p class="tagline">
-    I will share my learning experiances and projects here"
+    I will share my learning experiances and projects here
     </p>
   </div>
 </section>
