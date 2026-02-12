@@ -1,70 +1,73 @@
-hr {
-  margin-top: 30px;
+/* Bas-layout */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Hero */
+.hero {
+  background-color: #007acc;
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.hero .tagline {
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+
+/* Post list */
+.post-list h2 {
+  margin-bottom: 30px;
+}
+
+.post-item {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
   margin-bottom: 20px;
 }
 
-/* Post navigation links */
-.post_navi {
-  display: flex;
+.post-item h3 {
+  margin: 0 0 5px 0;
 }
 
-.post_navi-label {
-  font-size: 0.8em;
-  opacity: 0.5;
-}
-
-.post_navi .post_navi-item {
-  padding: 0 2.2em;
-  width: 50%;
-  position: relative;
-  color: inherit !important;
-}
-
-.post_navi .nav_prev {
-  text-align: left;
-}
-
-.post_navi .nav_next {
-  text-align: right;
-}
-
-.post_navi .nav_prev .post_navi-arrow {
-  left: 0;
-}
-
-.post_navi .nav_next .post_navi-arrow {
-  right: 0;
-}
-
-.post_navi .post_navi-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 2.5em;
-  opacity: 0.3;
-}
-.hero {
-  text-align: center;
-  margin: 3rem 0;
-}
-
-.posts {
-  max-width: 800px;
-  margin: auto;
-}
-
-.post-preview {
-  border-bottom: 1px solid #ddd;
-  padding: 1rem 0;
-}
-
-.post-preview h3 {
-  margin: 0;
-}
-.post-preview .meta {
-  font-size: 0.8em;
+.post-meta {
+  font-size: 0.9em;
   color: #666;
+  margin-bottom: 10px;
 }
+
+/* Taggar */
+.post-tags {
+  margin-bottom: 10px;
+}
+
+.post-tags .tag {
+  display: inline-block;
+  background-color: #eef6fb;
+  color: #007acc;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-right: 5px;
+  text-decoration: none;
+}
+
+.post-tags .tag:hover {
+  background-color: #d0e9ff;
+}
+
+/* Teaser och läs mer */
 .post-excerpt {
   font-size: 16px;
   color: #444;
