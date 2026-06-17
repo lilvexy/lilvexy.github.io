@@ -70,7 +70,7 @@ Incidenten stoppades snabbt genom att stänga porten och blockera angriparen, me
 
 ## **Övervakad miljö och arkitektur**
 
-## Organisationens säkerhetsarkitektur är uppbyggd som en containeriserad infrastruktur via Docker Desktop på en Ubuntu-värddator. Miljön är uppdelad i en centraliserad övervakningsplattform (SIEM) och målsystem (offren):
+#Organisationens säkerhetsarkitektur är uppbyggd som en containeriserad infrastruktur via Docker Desktop på en Ubuntu-värddator. Miljön är uppdelad i en centraliserad övervakningsplattform (SIEM) och målsystem (offren):
 
 * Wazuh Agent: Körs lokalt på offer-ssh och nginx-proxy. Samlar in loggfiler, övervakar filintegritet (FIM) och skickar data krypterat till managern via port 1514/TCP.
 
@@ -146,7 +146,7 @@ Incidenten stoppades snabbt genom att stänga porten och blockera angriparen, me
 
 ## **Befintlig regeluppsättning**
 
-## Wazuh har ett omfattande inbyggt bibliotek med tusentals standardregler laddade i sin regelmotor. Dessa regler ligger ständigt aktiva i bakgrunden och analyserar strömmande loggdata baserat på allvarlighetsgrad (Severity 0–15) och MITRE ATT\&CK-ramverket. Under denna specifika incident var det följande standardregler som triggades och genererade alerten.
+Wazuh har ett omfattande inbyggt bibliotek med tusentals standardregler laddade i sin regelmotor. Dessa regler ligger ständigt aktiva i bakgrunden och analyserar strömmande loggdata baserat på allvarlighetsgrad (Severity 0–15) och MITRE ATT\&CK-ramverket. Under denna specifika incident var det följande standardregler som triggades och genererade alerten.
 
 ## ![][image1]
 
