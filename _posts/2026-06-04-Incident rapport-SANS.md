@@ -507,18 +507,18 @@ Wazuh visade sig vara ett bra verktyg för efterhandanalys tack vare snabb index
 
 ## **BILAGOR**
 
-## SSH-OFFER passwd and shadow hashes.  
+SSH-OFFER passwd and shadow hashes.  
 ## ![][image7]  
-## SSH offer sha256 log hashes.   
+SSH offer sha256 log hashes.   
 ## ![][image8]  
 ## ![][image9]
 
-## NGINX logg hashes  
+NGINX logg hashes  
 ## ![][image10]  
 ## ![][image11]  
-## Juiceshop passwd and shadow hashes.   
+Juiceshop passwd and shadow hashes.   
 ## ![][image12]  
-## JUICE-SHOP log hashes  
+#JUICE-SHOP log hashes  
 ## ![][image13]
 
 
