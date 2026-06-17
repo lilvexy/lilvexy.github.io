@@ -94,7 +94,7 @@ Incidenten stoppades snabbt genom att stänga porten och blockera angriparen, me
 * flog-noise: En verktygscontainer som genererar kontinuerliga bakgrundsloggar (Apache, Syslog, JSON) för att skapa ett realistiskt signal-till-brus-förhållande.
 
 
-## 
+
 
 ## **Aktiva loggkällor och format**
 
@@ -158,9 +158,7 @@ Wazuh har ett omfattande inbyggt bibliotek med tusentals standardregler laddade 
 | 31151 | Multiple web server 400 error codes from same source IP | 10 | web\_scan, recon (Korrelerad skanningdetektering) |  |
 | 5712 | SSHD brute force trying to get access | 10 | authentication\_failed, brute\_force (SSH-attacker) |  |
 
-## 
 
-## ---
 
 ## **A3. Identifikation**
 
