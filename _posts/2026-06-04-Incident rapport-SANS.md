@@ -60,9 +60,9 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## **A1. Sammanfattning**
 
-## Den 16 maj upptäcktes ett externt dataintrång i våra system efter att organisationens säkerhetslarm slagit larm. Angriparen inledde med riktade webb attacker mot vår publika webbplats och utnyttjade en felaktigt öppen port för att runda våra vanliga säkerhetsfilter. På grund av för öppna kopplingar mellan våra interna system behållare kunde angriparen ta sig vidare och komma åt krypterad användarinformation.
+Den 16 maj upptäcktes ett externt dataintrång i våra system efter att organisationens säkerhetslarm slagit larm. Angriparen inledde med riktade webb attacker mot vår publika webbplats och utnyttjade en felaktigt öppen port för att runda våra vanliga säkerhetsfilter. På grund av för öppna kopplingar mellan våra interna system behållare kunde angriparen ta sig vidare och komma åt krypterad användarinformation.
 
-## Incidenten stoppades snabbt genom att stänga porten och blockera angriparen, men den exponerade datan innebär att vi måste rapportera händelsen enligt GDPR och NIS2. Inga övriga affärskritiska system påverkades, och de drabbade konton är nu helt säkrade och återställda. De viktigaste lärdomarna är att vi måste isolera våra interna systembehållare bättre, kontrollera öppna portar striktare, samt bygga in säkrare kodning på webbplatsen för att automatiskt stoppa webbattacker.
+Incidenten stoppades snabbt genom att stänga porten och blockera angriparen, men den exponerade datan innebär att vi måste rapportera händelsen enligt GDPR och NIS2. Inga övriga affärskritiska system påverkades, och de drabbade konton är nu helt säkrade och återställda. De viktigaste lärdomarna är att vi måste isolera våra interna systembehållare bättre, kontrollera öppna portar striktare, samt bygga in säkrare kodning på webbplatsen för att automatiskt stoppa webbattacker.
 
 ## 
 
@@ -72,26 +72,26 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## Organisationens säkerhetsarkitektur är uppbyggd som en containeriserad infrastruktur via Docker Desktop på en Ubuntu-värddator. Miljön är uppdelad i en centraliserad övervakningsplattform (SIEM) och målsystem (offren):
 
-* ## Wazuh Agent: Körs lokalt på offer-ssh och nginx-proxy. Samlar in loggfiler, övervakar filintegritet (FIM) och skickar data krypterat till managern via port 1514/TCP.
+* Wazuh Agent: Körs lokalt på offer-ssh och nginx-proxy. Samlar in loggfiler, övervakar filintegritet (FIM) och skickar data krypterat till managern via port 1514/TCP.
 
-* ## Wazuh Manager (wazuh.manager): Den centrala enheten som tar emot data från agenterna, avkodar loggar, matchar dem mot regelmotorn, korrelerar händelser och genererar larm.
+* Wazuh Manager (wazuh.manager): Den centrala enheten som tar emot data från agenterna, avkodar loggar, matchar dem mot regelmotorn, korrelerar händelser och genererar larm.
 
-* ## Wazuh Indexer (wazuh.indexer): Indexerar och lagrar historisk loggdata för snabb sökning.
-
-
-* ## Wazuh Dashboard (wazuh.dashboard): Det grafiska webbgränssnittet för incidenthantering och analys.
+* Wazuh Indexer (wazuh.indexer): Indexerar och lagrar historisk loggdata för snabb sökning.
 
 
-* ## nginx-proxy: En Debian-baserad reverse proxy (port 3002 utåt) som hanterar lastbalansering och vidarebefordrar legitim trafik till webbapplikationen. Innehåller en aktiv Wazuh-agent.
+* Wazuh Dashboard (wazuh.dashboard): Det grafiska webbgränssnittet för incidenthantering och analys.
 
 
-* ## offer-juice-shop: En Node.js-baserad webbapplikation (OWASP Juice Shop) sårbar för SQLi, XSS och trasig åtkomstkontroll. Har en felkonfigurerad direktport ut mot internet (port 3000\) som tillåter trafik att passera vid sidan av proxyn och SIEM-övervakningen.
+* nginx-proxy: En Debian-baserad reverse proxy (port 3002 utåt) som hanterar lastbalansering och vidarebefordrar legitim trafik till webbapplikationen. Innehåller en aktiv Wazuh-agent.
 
 
-* ## offer-ssh: En Debian-baserad Linux-instans med en exponerad SSH-tjänst (port 2222\) som simulerar en intern administrationsserver. Innehåller en Wazuh-agent med volymmappning (wazuh\_offer\_ssh:/var/ossec) för filövervakning.
+* offer-juice-shop: En Node.js-baserad webbapplikation (OWASP Juice Shop) sårbar för SQLi, XSS och trasig åtkomstkontroll. Har en felkonfigurerad direktport ut mot internet (port 3000\) som tillåter trafik att passera vid sidan av proxyn och SIEM-övervakningen.
 
 
-* ## flog-noise: En verktygscontainer som genererar kontinuerliga bakgrundsloggar (Apache, Syslog, JSON) för att skapa ett realistiskt signal-till-brus-förhållande.
+* offer-ssh: En Debian-baserad Linux-instans med en exponerad SSH-tjänst (port 2222\) som simulerar en intern administrationsserver. Innehåller en Wazuh-agent med volymmappning (wazuh\_offer\_ssh:/var/ossec) för filövervakning.
+
+
+* flog-noise: En verktygscontainer som genererar kontinuerliga bakgrundsloggar (Apache, Syslog, JSON) för att skapa ett realistiskt signal-till-brus-förhållande.
 
 
 ## 
@@ -102,47 +102,47 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 1. ## Nginx Webbtrafikloggar (access.log)
 
-   * ## Format: Apache/Nginx Combined Log Format (strängbaserad textlogg).
+   * Format: Apache/Nginx Combined Log Format (strängbaserad textlogg).
 
-   * ## Exempel: 172.18.0.1 \- \- \[16/May/2026:11:13:09 \+0200\] "GET /rest/products/search?q=q'))+UNION... HTTP/1.1" 200 412 "-" "Mozilla/5.0"
+   * Exempel: 172.18.0.1 \- \- \[16/May/2026:11:13:09 \+0200\] "GET /rest/products/search?q=q'))+UNION... HTTP/1.1" 200 412 "-" "Mozilla/5.0"
 
-   * ## Syfte: Ger synlighet i applikationslagret (Layer 7\) för att detektera webbattacker, skadliga payloads, API-missbruk och statuskoder.
+   * Syfte: Ger synlighet i applikationslagret (Layer 7\) för att detektera webbattacker, skadliga payloads, API-missbruk och statuskoder.
 
      
 
 2. ## Nginx Fel- och Systemloggar (error.log)
 
-   * ## Format: Nginx Error Log Format.
+   * Format: Nginx Error Log Format.
 
-   * ## Exempel: 2026/05/16 11:13:05 \[error\] 31\#31: \*12 connect() failed (111: Connection refused) while connecting to upstream...
+   * Exempel: 2026/05/16 11:13:05 \[error\] 31\#31: \*12 connect() failed (111: Connection refused) while connecting to upstream...
 
-   * ## Syfte: Detekterar backend-problem, misslyckade anslutningar mot Juice Shop och dolda systemfel till följd av skanning.
+   * Syfte: Detekterar backend-problem, misslyckade anslutningar mot Juice Shop och dolda systemfel till följd av skanning.
 
      
 
 3. ## Linux Autentiseringsloggar (auth.log)
 
-   * ## Format: Syslog / Standard Linux Auth Format.
+   * Format: Syslog / Standard Linux Auth Format.
 
-   * ## Exempel: May 16 11:14:02 offer-ssh sshd\[412\]: Failed password for student from 172.18.0.1 port 43210 ssh2
+   * Exempel: May 16 11:14:02 offer-ssh sshd\[412\]: Failed password for student from 172.18.0.1 port 43210 ssh2
 
-   * ## Syfte: Övervakar identitets- och åtkomstlagret på offer-ssh för att identifiera brute force-attacker, konto-komprometteringar och missbruk av sudo.
+   * Syfte: Övervakar identitets- och åtkomstlagret på offer-ssh för att identifiera brute force-attacker, konto-komprometteringar och missbruk av sudo.
 
      
 
 4. ## Wazuh File Integrity Monitoring (FIM / Syscheck)
 
-   * ## Format: Wazuh Internal FIM Event (JSON).
+   * Format: Wazuh Internal FIM Event (JSON).
 
-   * ## Syfte: Övervakar katalogen /var/ossec/ på offer-ssh efter filförändringar i realtid. Detekterar när nya filer skapas, raderas eller modifieras samt registrerar förändringar i filernas SHA-256-hashar.
+   * Syfte: Övervakar katalogen /var/ossec/ på offer-ssh efter filförändringar i realtid. Detekterar när nya filer skapas, raderas eller modifieras samt registrerar förändringar i filernas SHA-256-hashar.
 
      
 
 5. ## Simulerat loggbrus (flog-noise)
 
-   * ## Format: Blandat (JSON, Syslog, Apache).
+   * Format: Blandat (JSON, Syslog, Apache).
 
-   * ## Syfte: Validerar att SIEM-systemet kan hantera hög genomströmning (EPS) och filtrera bort normalt beteende från faktiska attacker.
+   * Syfte: Validerar att SIEM-systemet kan hantera hög genomströmning (EPS) och filtrera bort normalt beteende från faktiska attacker.
 
 ## **Befintlig regeluppsättning**
 
@@ -167,15 +167,15 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## Analysen genomfördes systematiskt för att gå från enskilda larm till en fullständig kartläggning av angriparens rörelser:
 
-1. ## Observation (Anomalidetektering): Incidenten initierades när Wazuhs regelmotor flaggade för ett kritiskt korrelationslarm (Rule 31151, Severity 10). Detta indikerade databasskanning och pågående webbattacker.
+1. Observation (Anomalidetektering): Incidenten initierades när Wazuhs regelmotor flaggade för ett kritiskt korrelationslarm (Rule 31151, Severity 10). Detta indikerade databasskanning och pågående webbattacker.
 
    
 
-2. ## Hypotesformulering: Baserat på de inledande larmen formulerades tre hypoteser för att fastställa attackens omfattning och identifiera eventuella blinda fläckar i övervakningen (se detaljerad verifiering nedan).
+2. Hypotesformulering: Baserat på de inledande larmen formulerades tre hypoteser för att fastställa attackens omfattning och identifiera eventuella blinda fläckar i övervakningen (se detaljerad verifiering nedan).
 
    
 
-3. ## Riktad Query-baserad Verifiering och Extern Analys: Hypoteserna prövades genom specifika sökningar i Wazuh Dashboard. För aktiviteter som misstänktes kringgå SIEM-systemet kompletterades analysen med extern nätverksanalys.
+3. Riktad Query-baserad Verifiering och Extern Analys: Hypoteserna prövades genom specifika sökningar i Wazuh Dashboard. För aktiviteter som misstänktes kringgå SIEM-systemet kompletterades analysen med extern nätverksanalys.
 
    
 
@@ -200,27 +200,27 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## 
 
-## Efter den lyckade SSH-inloggningen använde angriparen den komprometterade offer-ssh\-instansen som bas för intern informationsinsamling och rörelse i sidleds. Denna aktivitet genererade inga larm i Wazuh. Eftersom Wazuh är ett host-baserat system (HIDS) som analyserar loggfiler och systemintegritet, lämnades en blind fläck gällande nätverkstrafik.
+Efter den lyckade SSH-inloggningen använde angriparen den komprometterade offer-ssh\-instansen som bas för intern informationsinsamling och rörelse i sidleds. Denna aktivitet genererade inga larm i Wazuh. Eftersom Wazuh är ett host-baserat system (HIDS) som analyserar loggfiler och systemintegritet, lämnades en blind fläck gällande nätverkstrafik.
 
-## Aktiv reconnaissance mot den interna Docker-bryggan (Layer 2/3-mönster) identifierades istället via en parallell paket insamling i Wireshark. Denna trafikanalys bekräftade att angriparen aktivt kartlade angränsande containrar i nätverket vilket missades av SIEM-övervakningen som bara loggade ssh bruteforce. 
+Aktiv reconnaissance mot den interna Docker-bryggan (Layer 2/3-mönster) identifierades istället via en parallell paket insamling i Wireshark. Denna trafikanalys bekräftade att angriparen aktivt kartlade angränsande containrar i nätverket vilket missades av SIEM-övervakningen som bara loggade ssh bruteforce. 
 
 ## **Hypotesprövning** 
 
-* ## Hypotes 1: De registrerade HTTP 500-felen bekräftar att en skadlig kod-payload har exekverats på servern.
+* Hypotes 1: De registrerade HTTP 500-felen bekräftar att en skadlig kod-payload har exekverats på servern.
 
-  * ## *Verifiering (Avfärdad)*: Felkoden HTTP 500 indikerar endast en serverkrasch eller ett internt funktionsfel i webbapplikationens backend till följd av attackerna. Logginnehållet i Wazuh är i detta skede otillräckligt för att säkerställa den exakta bakomliggande orsaken till kraschen.
-
-    
-
-* ## Hypotes 2: Angriparen har uppnått Remote Code Execution (RCE) via Nginx-proxyns CGI-gränssnitt.
-
-  * ## *Verifiering (Avfärdad/Negativ kontroll)*: Query 6 (sökning efter \*cgi-bin\*) gav noll (0) träffar. Detta bekräftade källans integritet i just denna vektor.
+  * *Verifiering (Avfärdad)*: Felkoden HTTP 500 indikerar endast en serverkrasch eller ett internt funktionsfel i webbapplikationens backend till följd av attackerna. Logginnehållet i Wazuh är i detta skede otillräckligt för att säkerställa den exakta bakomliggande orsaken till kraschen.
 
     
 
-* ## Hypotes 3: Webbattackerna är begränsade till trafiken som passerar genom vår reverse proxy på port 3002\.
+* Hypotes 2: Angriparen har uppnått Remote Code Execution (RCE) via Nginx-proxyns CGI-gränssnitt.
 
-  * ## *Verifiering (Avfärdad)*: Analys av loggdata och angriparens mönster visade att webbapplikationen även attackerades direkt via den felaktigt öppna porten ut mot internet (port 3000), vilket kringgick proxyns skyddande funktion.
+  * *Verifiering (Avfärdad/Negativ kontroll)*: Query 6 (sökning efter \*cgi-bin\*) gav noll (0) träffar. Detta bekräftade källans integritet i just denna vektor.
+
+    
+
+* Hypotes 3: Webbattackerna är begränsade till trafiken som passerar genom vår reverse proxy på port 3002\.
+
+  * *Verifiering (Avfärdad)*: Analys av loggdata och angriparens mönster visade att webbapplikationen även attackerades direkt via den felaktigt öppna porten ut mot internet (port 3000), vilket kringgick proxyns skyddande funktion.
 
     
 
@@ -230,33 +230,33 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## Följande queries användes för att isolera artefakter och verifiera hypoteserna:
 
-* ## Query 1: agent.name:"nginx-proxy"
+* Query 1: agent.name:"nginx-proxy"
 
-  * ## *Syfte*: Isolera säkerhetslarm relaterade till reverse proxy-systemet för att kartlägga de inkommande webbattackerna.
-
-    
-
-* ## Query 2: data.srcip:"172.18.0.1"
-
-  * ## *Syfte*: Korrelera samtliga händelser från den identifierade angripar-IP-adressen.
+  * *Syfte*: Isolera säkerhetslarm relaterade till reverse proxy-systemet för att kartlägga de inkommande webbattackerna.
 
     
 
-* ## Query 3: data.url:"/api/Users\*"
+* Query 2: data.srcip:"172.18.0.1"
 
-  * ## *Syfte*: Verifiera omfattningen av kontoenumeration och kartlägga läckan av användardata.
-
-    
-
-* ## Query 4: rule.id:(5712 OR 5720 OR 5715\)
-
-  * ## *Syfte*: Detektera skanning, brute force-försök och den efterföljande lyckade inloggningen på SSH-tjänsten.
+  * *Syfte*: Korrelera samtliga händelser från den identifierade angripar-IP-adressen.
 
     
 
-* ## Query 5: data.url:"\*cgi-bin\*"
+* Query 3: data.url:"/api/Users\*"
 
-  * ## *Syfte*: Genomföra en negativ kontroll för att utesluta RCE-försök mot kända CGI-sårbarheter.
+  * *Syfte*: Verifiera omfattningen av kontoenumeration och kartlägga läckan av användardata.
+
+    
+
+* Query 4: rule.id:(5712 OR 5720 OR 5715\)
+
+  * *Syfte*: Detektera skanning, brute force-försök och den efterföljande lyckade inloggningen på SSH-tjänsten.
+
+    
+
+* Query 5: data.url:"\*cgi-bin\*"
+
+  * *Syfte*: Genomföra en negativ kontroll för att utesluta RCE-försök mot kända CGI-sårbarheter.
 
     
 
@@ -264,22 +264,22 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## Påverkade system:
 
-* ## nginx-proxy: Loggade delar av webbattackerna.
+* nginx-proxy: Loggade delar av webbattackerna.
 
 
-  * ## offer-juice-shop: Drabbades av webbattacker (inklusive en framgångsrik UNION\-injection och kontoenumeration) via både port 3000 och 3002, vilket resulterade i läckt användardata från databasen samt en efterföljande serverkrasch (HTTP 500).
+  * offer-juice-shop: Drabbades av webbattacker (inklusive en framgångsrik UNION\-injection och kontoenumeration) via både port 3000 och 3002, vilket resulterade i läckt användardata från databasen samt en efterföljande serverkrasch (HTTP 500).
 
     
 
-  * ## offer-ssh: Utsattes för nätverksskanning, brute force-attack samt efterföljande kontokompromettering. Väl inne användes instansen för osynlig lateral nätverksskanning (identifierad via Wireshark) samt en *credential dumping* av offer-ssh etc/passwd. Dessa slogs samman med de stulna användardatan från Juice Shop och sparades i filen stulen\_data.txt på offer-ssh servern för exfiltrering.
+  * offer-ssh: Utsattes för nätverksskanning, brute force-attack samt efterföljande kontokompromettering. Väl inne användes instansen för osynlig lateral nätverksskanning (identifierad via Wireshark) samt en *credential dumping* av offer-ssh etc/passwd. Dessa slogs samman med de stulna användardatan från Juice Shop och sparades i filen stulen\_data.txt på offer-ssh servern för exfiltrering.
 
     
 
 * ## Inblandade användarkonton:
 
-  * ## *Applikationsnivå*: Kontot admin@juice-sh.op samt övriga användarprofiler som komprometterades och exfiltrerades via webbapplikationens sårbarheter.
+  * *Applikationsnivå*: Kontot admin@juice-sh.op samt övriga användarprofiler som komprometterades och exfiltrerades via webbapplikationens sårbarheter.
 
-  * ## *Systemnivå*: Det lokala operativsystemskonton student och root på servern offer-ssh.
+  * *Systemnivå*: Det lokala operativsystemskonton student och root på servern offer-ssh.
 
     
 
@@ -319,18 +319,18 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
    
 ## De omedelbara åtgärderna fokuserade på att stoppa den pågående attacken och begränsa spridningen:
 
- * ## Brandväggsblockering (IP-spärr): Angriparens verifierade käll-IP (172.18.0.1) blockerades omedelbart via nätverksregler för att bryta dennes externa anslutning.  
+ * Brandväggsblockering (IP-spärr): Angriparens verifierade käll-IP (172.18.0.1) blockerades omedelbart via nätverksregler för att bryta dennes externa anslutning.  
     
- * ## Mitigering av origin bypass: Direktåtkomsten till port 3000 ut mot internet stängdes ner i brandväggsreglerna och en kontroll av alla öppna portar utfördes. Detta eliminerade angriparens möjlighet att kringgå reverse proxyn och tvingade all framtida webbtrafik att passera genom den övervakade nginx-proxy.  
+ * Mitigering av origin bypass: Direktåtkomsten till port 3000 ut mot internet stängdes ner i brandväggsreglerna och en kontroll av alla öppna portar utfördes. Detta eliminerade angriparens möjlighet att kringgå reverse proxyn och tvingade all framtida webbtrafik att passera genom den övervakade nginx-proxy.  
     
-* ## Isolering av användarkonton: Systemkontot student på offer-ssh låstes temporärt i operativsystemet. Det komprometterade administratörskontot samt de drabbade användarkontona i Juice Shop inaktiverades i databasen, och alla aktiva sessioner samt JSON Web Tokens (JWT) tvångsavslutades.  
+* Isolering av användarkonton: Systemkontot student på offer-ssh låstes temporärt i operativsystemet. Det komprometterade administratörskontot samt de drabbade användarkontona i Juice Shop inaktiverades i databasen, och alla aktiva sessioner samt JSON Web Tokens (JWT) tvångsavslutades.  
     
-* ## Nätverkskarantän och loggövervakning: De drabbade systemen (offer-ssh och offer-juice-shop) isolerades logiskt i ett forensiskt karantännätverk (VLAN/Docker-nätverk) för att tillåta vidare utredning utan spridningsrisk. Samtidigt aktiverades skärpt realtidsövervakning i Wazuh för endpoints som /api/Users och /rest/user/login.  
+* Nätverkskarantän och loggövervakning: De drabbade systemen (offer-ssh och offer-juice-shop) isolerades logiskt i ett forensiskt karantännätverk (VLAN/Docker-nätverk) för att tillåta vidare utredning utan spridningsrisk. Samtidigt aktiverades skärpt realtidsövervakning i Wazuh för endpoints som /api/Users och /rest/user/login.  
   
 
 
 ## **Bevarande av bevismaterial (System back-up)**  
-## Innan några permanenta förändringar gjordes i systemen säkrades relevanta loggar och artefakter forensiskt. För att garantera bevismaterialets integritet och kedja (Chain of Custody) enligt etablerade standarder genererades kryptografiska checksummor omedelbart med kommandot sha256sum. \.
+Innan några permanenta förändringar gjordes i systemen säkrades relevanta loggar och artefakter forensiskt. För att garantera bevismaterialets integritet och kedja (Chain of Custody) enligt etablerade standarder genererades kryptografiska checksummor omedelbart med kommandot sha256sum. \.
 
 | Bevismaterial | Källa  | SHA-256-hash (64 tecken) | Lagringsplats (Säkrad) | Datum/tid  |
 | ----- | ----- | ----- | ----- | ----- |
@@ -344,11 +344,11 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## Dessa åtgärder vidtogs för att låta verksamheten fortsätta under säkra former medan permanenta arkitekturförändringar implementeras:
 
-* ## Trafikbegränsning: Konfigurering av *rate limiting* i Nginx-proxyn till maximalt 5 anrop per minut per unik IP-adress mot känsliga API-endpoints för att dämpa framtida skanningsförsök.  
+* Trafikbegränsning: Konfigurering av *rate limiting* i Nginx-proxyn till maximalt 5 anrop per minut per unik IP-adress mot känsliga API-endpoints för att dämpa framtida skanningsförsök.  
     
-* ## Segmentering av containernätverk: Omstrukturering av Docker-nätverksarkitekturen där det interna administrationsnätverket (offer-ssh) isolerades helt från applikationsmiljön via interna brandväggsregler (iptables) för att förhindra framtida lateral rörelse.  
+* Segmentering av containernätverk: Omstrukturering av Docker-nätverksarkitekturen där det interna administrationsnätverket (offer-ssh) isolerades helt från applikationsmiljön via interna brandväggsregler (iptables) för att förhindra framtida lateral rörelse.  
     
-* ## Proaktivt applikationsskydd (WAF): Initiering av ett projekt för att driftsätta en Web Application Firewall (WAF, t.ex. ModSecurity) integrerad med Nginx för att inspektera Lager 7-trafik och blockera kända attackmönster.
+* Proaktivt applikationsskydd (WAF): Initiering av ett projekt för att driftsätta en Web Application Firewall (WAF, t.ex. ModSecurity) integrerad med Nginx för att inspektera Lager 7-trafik och blockera kända attackmönster.
 
 
   
@@ -356,157 +356,157 @@ Fokus ligger på försvararsidan (SOC-analytiker) och på hur en fullständig in
 
 ## **A5. Utrotning** 
 
-## Efter avslutad inneslutning och forensisk säkring sanerades miljön fullständigt från skadliga spår och sårbarheterna åtgärdades vid roten:
+Efter avslutad inneslutning och forensisk säkring sanerades miljön fullständigt från skadliga spår och sårbarheterna åtgärdades vid roten:
 
-* ## Global sessionssanering: Alla aktiva sessioner, cookies och JWT-tokens återkallades globalt i applikationens backend för att säkerställa att angriparen inte kunde återinträda via kapade sessions-id:n.  
+* Global sessionssanering: Alla aktiva sessioner, cookies och JWT-tokens återkallades globalt i applikationens backend för att säkerställa att angriparen inte kunde återinträda via kapade sessions-id:n.  
     
-* ## Rensning av skadliga filer: Filen stulen\_data.txt raderades permanent från offer-ssh efter att den forensiska kopian och dess tillhörande hash säkrats i mappen /evidence/.  
+* Rensning av skadliga filer: Filen stulen\_data.txt raderades permanent från offer-ssh efter att den forensiska kopian och dess tillhörande hash säkrats i mappen /evidence/.  
     
-* ## Säkring av autentisering och härdning (SSH): Lösenordsautentisering inaktiverades helt i /etc/ssh/sshd\_config på servern offer-ssh. Tjänsten konfigurerades till att uteslutande tillåta kryptografiska SSH-nycklar. Dessutom installerades skyddsverktyget Fail2ban för att automatiskt blockera IP-adresser som genererar upprepade misslyckade inloggningsförsök.  
+* Säkring av autentisering och härdning (SSH): Lösenordsautentisering inaktiverades helt i /etc/ssh/sshd\_config på servern offer-ssh. Tjänsten konfigurerades till att uteslutande tillåta kryptografiska SSH-nycklar. Dessutom installerades skyddsverktyget Fail2ban för att automatiskt blockera IP-adresser som genererar upprepade misslyckade inloggningsförsök.  
     
-* ## Input-sanering och parametrisering (Kodåtgärder): Nginx-proxyns konfiguration uppdaterades med stränga regex uttryck för att blockera och kasta bort inkommande HTTP-anrop som innehåller skadlig SQL-syntax (såsom UNION SELECT). Applikationskoden flaggades för en akut uppdatering där parametriserade frågor (*Prepared Statements*) införs i sökfunktionen för att strukturellt omöjliggöra SQL-injections i framtiden.
+* Input-sanering och parametrisering (Kodåtgärder): Nginx-proxyns konfiguration uppdaterades med stränga regex uttryck för att blockera och kasta bort inkommande HTTP-anrop som innehåller skadlig SQL-syntax (såsom UNION SELECT). Applikationskoden flaggades för en akut uppdatering där parametriserade frågor (*Prepared Statements*) införs i sökfunktionen för att strukturellt omöjliggöra SQL-injections i framtiden.
 
 
   
 
 ## **Verifiering och integritetskontroll**
 
-## Innan några tjänster åter sattes i drift genomfördes en omfattande kontroll av de drabbade instanserna.
+Innan några tjänster åter sattes i drift genomfördes en omfattande kontroll av de drabbade instanserna.
 
-* ## Sanering av filsystem och binärer: En fullständig integritetskontroll genomfördes via Wazuh FIM för att verifiera och säkerställa att inga ytterligare obehöriga filer skapats eller modifierats utöver den raderade stulen\_data.txt. Kritiska systembinärer på både offer-ssh och nginx-proxy kontrollerades mot kända hash-databaser för att helt utesluta förekomsten av dolda bakdörrar (t.ex. rootkits).  
+* Sanering av filsystem och binärer: En fullständig integritetskontroll genomfördes via Wazuh FIM för att verifiera och säkerställa att inga ytterligare obehöriga filer skapats eller modifierats utöver den raderade stulen\_data.txt. Kritiska systembinärer på både offer-ssh och nginx-proxy kontrollerades mot kända hash-databaser för att helt utesluta förekomsten av dolda bakdörrar (t.ex. rootkits).  
     
-* ## Säkring av autentiseringsmekanismer: Eftersom lösenordsautentisering inaktiverades helt under utrotningsfasen, validerades konfigurationen i /etc/ssh/sshd\_config så att endast auktoriserade, kryptografiska SSH-nycklar tillåts för kontot student. I webbapplikationens backend rensades databastabellen för aktiva sessioner permanent, vilket omedelbart ogiltigförklarade samtliga historiska sessionstokens och tvingade fram en ny autentisering för alla användare.  
+* Säkring av autentiseringsmekanismer: Eftersom lösenordsautentisering inaktiverades helt under utrotningsfasen, validerades konfigurationen i /etc/ssh/sshd\_config så att endast auktoriserade, kryptografiska SSH-nycklar tillåts för kontot student. I webbapplikationens backend rensades databastabellen för aktiva sessioner permanent, vilket omedelbart ogiltigförklarade samtliga historiska sessionstokens och tvingade fram en ny autentisering för alla användare.  
   
 
 
 ## **Återgång till produktion**
 
-## Återgång till production gjordes stegvis för att minimera riskerna och säkerställa att kontroll mekanismerna fungerade:
+Återgång till production gjordes stegvis för att minimera riskerna och säkerställa att kontroll mekanismerna fungerade:
 
-1. ## Intern kommunikation: Den interna nätverksanslutningen mellan nginx-proxy och webbapplikationens backend öppnades först i en isolerad miljö för att verifiera att applikationsflödet fungerade normalt.  
+1. Intern kommunikation: Den interna nätverksanslutningen mellan nginx-proxy och webbapplikationens backend öppnades först i en isolerad miljö för att verifiera att applikationsflödet fungerade normalt.  
      
-2. ## Kontrollerad extern exponering: Webbapplikationen exponerades återigen mot internet, men uteslutande via den säkrade reverse proxyn på port 3002\.  
-3. ## Permanent stängning: Den felkonfigurerade direktporten 3000 stängdes permanent och togs bort från nätverkskonfigurationen. Alla öppna portar kontrollerades.   
+2. Kontrollerad extern exponering: Webbapplikationen exponerades återigen mot internet, men uteslutande via den säkrade reverse proxyn på port 3002\.  
+3. Permanent stängning: Den felkonfigurerade direktporten 3000 stängdes permanent och togs bort från nätverkskonfigurationen. Alla öppna portar kontrollerades.   
      
      
    
 
 ## **Förhöjd övervakning och uppföljning**
 
-## För händelseuppföljning tillämpades en policy för förhöjd övervakning under 48 timmar efter att systemen återgått i drift. I Wazuh Dashboard övervakades följande nyckelparametrar med extra hög prioritet:
+För händelseuppföljning tillämpades en policy för förhöjd övervakning under 48 timmar efter att systemen återgått i drift. I Wazuh Dashboard övervakades följande nyckelparametrar med extra hög prioritet:
 
-* ## Numerisk sekvensering: Specifik övervakning av onormala anrop och resurs-ID-mönster riktade mot /api/Users/\*.  
+* Numerisk sekvensering: Specifik övervakning av onormala anrop och resurs-ID-mönster riktade mot /api/Users/\*.  
     
-* ## Kända attacksträngar: Fortlöpande sökningar efter loggade mönster som indikerar SQL-injections (såsom UNION, SELECT eller \--).  
+* Kända attacksträngar: Fortlöpande sökningar efter loggade mönster som indikerar SQL-injections (såsom UNION, SELECT eller \--).  
     
-* ## Autentiseringsavvikelser: Alla eventuella sudo\-anrop på servern offer-ssh eller försök till obehörig SSH-nyckelhantering.  
+* Autentiseringsavvikelser: Alla eventuella sudo\-anrop på servern offer-ssh eller försök till obehörig SSH-nyckelhantering.  
     
-* ## Aggregerade larm: Särskilt fokus på nya korrelationslarm från Wazuh Manager med en allvarlighetsgrad (Severity) på 8 eller högre.
+* Aggregerade larm: Särskilt fokus på nya korrelationslarm från Wazuh Manager med en allvarlighetsgrad (Severity) på 8 eller högre.
 
-## Övervakningsperioden avslutades efter 48 timmar utan några registrerade avvikelser.
+Övervakningsperioden avslutades efter 48 timmar utan några registrerade avvikelser.
 
 ## **Rekommenderade långsiktiga förbättringar**
 
-## Incidenten har blottat tydliga begränsningar i den nuvarande övervakningsarkitekturen. För att täcka de blinda fläckar som uppstod under utredningen rekommenderas följande strategiska åtgärder:
+Incidenten har blottat tydliga begränsningar i den nuvarande övervakningsarkitekturen. För att täcka de blinda fläckar som uppstod under utredningen rekommenderas följande strategiska åtgärder:
 
-* ## Skapande av anpassade larmregler för Credential Dumping: Eftersom Wazuhs standardregler inte genererade larm när känsliga systemfiler lästes eller kopierades, bör en anpassad Wazuh-regel (Custom Rule) skapas. Genom att konfigurera Linux Audit-appen (auditd) att övervaka läs- och skrivanrop mot /etc/passwd och /etc/shadow, och mappa detta till en ny Wazuh-regel, kan framtida försök till lösenordsdumpning upptäckas och larmas om omedelbart.  
+* Skapande av anpassade larmregler för Credential Dumping: Eftersom Wazuhs standardregler inte genererade larm när känsliga systemfiler lästes eller kopierades, bör en anpassad Wazuh-regel (Custom Rule) skapas. Genom att konfigurera Linux Audit-appen (auditd) att övervaka läs- och skrivanrop mot /etc/passwd och /etc/shadow, och mappa detta till en ny Wazuh-regel, kan framtida försök till lösenordsdumpning upptäckas och larmas om omedelbart.  
     
-* ## Implementering av nätverksbaserad övervakning (NIDS/NDR): Eftersom nuvarande arkitektur är rent värdbaserad (HIDS via Wazuh) saknas insyn i rå nätverkstrafik. Organisationen bör införa en nätverksbaserad sensor (exempelvis Zeek eller Suricata) på Docker-bryggan. Detta krävs för att automatiskt kunna detektera och larma om interna nätverksskanningar (Layer 2/3) samt lateral rörelse i realtid, vilket under denna incident krävde manuell analys i Wireshark.  
+* Implementering av nätverksbaserad övervakning (NIDS/NDR): Eftersom nuvarande arkitektur är rent värdbaserad (HIDS via Wazuh) saknas insyn i rå nätverkstrafik. Organisationen bör införa en nätverksbaserad sensor (exempelvis Zeek eller Suricata) på Docker-bryggan. Detta krävs för att automatiskt kunna detektera och larma om interna nätverksskanningar (Layer 2/3) samt lateral rörelse i realtid, vilket under denna incident krävde manuell analys i Wireshark.  
     
-* ## Förbättrad larminsamling och loggcentralisering: Rutinerna för loggintag bör utökas till att omfatta applikationsspecifika loggar direkt från Juice Shop-backend, samt Docker-daemonens egna händelseloggar. Detta ger djupare synlighet i container-miljöns livscykel och underlättar korrelering vid framtida krascher (HTTP 500-fel).
+* Förbättrad larminsamling och loggcentralisering: Rutinerna för loggintag bör utökas till att omfatta applikationsspecifika loggar direkt från Juice Shop-backend, samt Docker-daemonens egna händelseloggar. Detta ger djupare synlighet i container-miljöns livscykel och underlättar korrelering vid framtida krascher (HTTP 500-fel).
 
 
 ### **A7. Lärdomar** 
 
 ## **Vad fungerade bra**
 
-* ## Inbyggd anslutningsfördröjning på SSH (Rate Throttling): \.
-  ## Trots att angriparen försökte rikta en storskalig brute force-attack mot root\-kontot på offer-ssh, misslyckades detta. SSH-tjänstens inbyggda tidsfördröjning mellan misslyckade inloggningsförsök ströp attackens hastighet. Det tog för lång tid för angriparen att gissa rätt, vilket skyddade administratörskontot från att bli komprometterat.  
+* Inbyggd anslutningsfördröjning på SSH (Rate Throttling): \.
+  Trots att angriparen försökte rikta en storskalig brute force-attack mot root\-kontot på offer-ssh, misslyckades detta. SSH-tjänstens inbyggda tidsfördröjning mellan misslyckade inloggningsförsök ströp attackens hastighet. Det tog för lång tid för angriparen att gissa rätt, vilket skyddade administratörskontot från att bli komprometterat.  
     
-* ## Kors Komponent Korrelering i Wazuh: \.   
-  ## Wazuh lyckades samla in och koppla ihop loggar från helt olika källor (Nginx-webbloggar och Linux-systemloggar). Korrelationsregeln Rule ID 31151 identifierade den inledande attacken genom att slå samman flera felkoder från en och samma angripar-IP.  
+* Kors Komponent Korrelering i Wazuh: \.   
+  Wazuh lyckades samla in och koppla ihop loggar från helt olika källor (Nginx-webbloggar och Linux-systemloggar). Korrelationsregeln Rule ID 31151 identifierade den inledande attacken genom att slå samman flera felkoder från en och samma angripar-IP.  
     
-* ## Signaturbaserad Layer 7-detektion:   
-  ## Identifieringen av skadliga payloads mot webbapplikationen i realtid (Rule ID 31164) fungerade effektivt. Detta visar att Wazuhs inbyggda bibliotek av regex-uttryck för kända attackmönster (såsom SQL-injections) har en god grundtäckning.  
+* Signaturbaserad Layer 7-detektion:   
+  Identifieringen av skadliga payloads mot webbapplikationen i realtid (Rule ID 31164) fungerade effektivt. Detta visar att Wazuhs inbyggda bibliotek av regex-uttryck för kända attackmönster (såsom SQL-injections) har en god grundtäckning.  
   
 
 
 ## **Vad fungerade dåligt eller saknades**
 
-* ## Kritiska sårbarheter i autentisering och infrastruktur (Svaga lösenord): Det förelåg allvarliga brister i organisationens lösenordspolicy. Både root\-kontot på offer-ssh och administratörskontot till själva Wazuh Dashboard använde extremt svaga lösenord. Om angriparen hade bruteforcat Wazuh Dashboard istället för SSH-tjänsten hade hela övervakningsinfrastrukturen kunnat bli helt övertagen.  
+* Kritiska sårbarheter i autentisering och infrastruktur (Svaga lösenord): Det förelåg allvarliga brister i organisationens lösenordspolicy. Både root\-kontot på offer-ssh och administratörskontot till själva Wazuh Dashboard använde extremt svaga lösenord. Om angriparen hade bruteforcat Wazuh Dashboard istället för SSH-tjänsten hade hela övervakningsinfrastrukturen kunnat bli helt övertagen.  
     
-* ## Avsaknad av semantisk applikationsförståelse: Nginx-loggarna ger endast synlighet i HTTP-begäran (URL) och HTTP-statussvar (felkoder). Eftersom Nginx inte loggar själva svarskroppen (Response body) var det omöjligt att via SIEM-plattformen se om SQL-injection-attacken faktiskt lyckades stjäla data i backend. Denna blinda fläck krävde manuell databasverifiering.  
+* Avsaknad av semantisk applikationsförståelse: Nginx-loggarna ger endast synlighet i HTTP-begäran (URL) och HTTP-statussvar (felkoder). Eftersom Nginx inte loggar själva svarskroppen (Response body) var det omöjligt att via SIEM-plattformen se om SQL-injection-attacken faktiskt lyckades stjäla data i backend. Denna blinda fläck krävde manuell databasverifiering.  
     
-* ## Låg viktning av initiala attackindikatorer: Den automatiserade kontoenumerationen mot /api/Users/X genererade initialt bara lågprioriterade Rule ID 31101\-larm (Severity 5). I en skarp miljö drunknar sådana larm i normalt bakgrundsbrus, vilket gjorde att angriparen kunde kartlägga applikationens användare utan att utlösa något akut larm.  
+* Låg viktning av initiala attackindikatorer: Den automatiserade kontoenumerationen mot /api/Users/X genererade initialt bara lågprioriterade Rule ID 31101\-larm (Severity 5). I en skarp miljö drunknar sådana larm i normalt bakgrundsbrus, vilket gjorde att angriparen kunde kartlägga applikationens användare utan att utlösa något akut larm.  
     
-* ## Strukturell nätverksblindhet (HIDS vs NIDS): Eftersom Wazuh är ett värdbaserat system (HIDS) analyserar det enbart loggfiler och lokala systemfiler. Systemet saknade helt kapacitet att upptäcka den Layer 2/3-nätverksskanning som angriparen utförde mot Docker-bryggan efter SSH-intrånget. Denna del av den laterala rörelsen var osynlig fram till manuell paketanalys i Wireshark.  
+* Strukturell nätverksblindhet (HIDS vs NIDS): Eftersom Wazuh är ett värdbaserat system (HIDS) analyserar det enbart loggfiler och lokala systemfiler. Systemet saknade helt kapacitet att upptäcka den Layer 2/3-nätverksskanning som angriparen utförde mot Docker-bryggan efter SSH-intrånget. Denna del av den laterala rörelsen var osynlig fram till manuell paketanalys i Wireshark.  
     
-* ## Bristande synlighet vid Credential Dumping: Wazuhs standardregler larmade inte när den känsliga systemfilen /etc/shadow kopierades till stulen\_data.txt. Eftersom Linux standardsyslog inte loggar vanliga filöppningar eller läsningar, missade SIEM-systemet helt att en lösenordsdumpning pågick.  
+* Bristande synlighet vid Credential Dumping: Wazuhs standardregler larmade inte när den känsliga systemfilen /etc/shadow kopierades till stulen\_data.txt. Eftersom Linux standardsyslog inte loggar vanliga filöppningar eller läsningar, missade SIEM-systemet helt att en lösenordsdumpning pågick.  
   
 
 
 ## **Sannolik rotorsak**
 
-## Incidenten inleddes med riktade webbattacker som lyckades på grund av att applikationens sökfunktion saknade input-sanering och parametriserade frågor, vilket tillät SQL-injections som exfiltrerade användardata från databasen.  
-## Den efterföljande lokala datainsamlingen och komprometteringen av känsliga systemdata, applikationskonton och lösenordshashar kunde utspela sig eftersom en extern angripare framgångsrikt lyckades ta sig förbi systemets yttre försvar. Angriparen loggade in på kontot student utan att trigga några högnivålarm. Att angriparen lyckades knäcka just detta konto, samtidigt som root\-kontot förblev skyddat, berodde på att student\-kontot var konfigurerat med ett alldeles för svagt lösenord. Lösenordets bristande komplexitet gjorde att angriparen hann gissa rätt, trots att SSH-tjänstens inbyggda timer aktivt ströp hastigheten mellan varje inloggningsförsök och fördröjde attacken, medan samma konfiguration förhindrade root\-access.  
-## Att intrånget inte upptäcktes och avbröts i tid berodde på brister i övervakningsarkitekturen, där Wazuhs standardregler tilldelade kontoisoleringsförsöken och enumerationerna en alldeles för låg allvarlighetsgrad. Med en larmnivå på Severity 5 drunknade de tidiga attackindikatorerna i bakgrundsbruset, vilket dolde den pågående incidenten för analytikern och fördröjde responstiden. Det saknades anpassade korrelationsregler för API-strukturen samt operativsystemsnära revisionsloggning (auditd) för att upptäcka otillåten filläsning av lösenordshashar.  
-## Den fundamentala rotorsaken till att miljön överhuvudtaget driftsattes med dessa sårbarheter, svaga lösenord, låga larmnivåer och öppna nätverkskopplingar mellan containrarna var en total avsaknad av säkerhetstänk i arkitekturen enligt principerna för *Security by Design*. Säkerhet var inte en del av processen vid skapandet. Systemet driftsattes med standardinställningar för både operativsystem, Docker-nätverk och SIEM-regler. Det saknades en centraliserad härdnings- och konfigurationspolicy, vilket innebar att inga proaktiva sårbarhetskontroller, nätverksisoleringar eller regeljusteringar genomfördes före driftsättning. Säkerheten försökte istället läggas på i efterhand genom att implementera en SIEM-lösning, vilket inte åtgärdar den fundamentala avsaknaden av säkerhet i själva strukturen.
+Incidenten inleddes med riktade webbattacker som lyckades på grund av att applikationens sökfunktion saknade input-sanering och parametriserade frågor, vilket tillät SQL-injections som exfiltrerade användardata från databasen.  
+Den efterföljande lokala datainsamlingen och komprometteringen av känsliga systemdata, applikationskonton och lösenordshashar kunde utspela sig eftersom en extern angripare framgångsrikt lyckades ta sig förbi systemets yttre försvar. Angriparen loggade in på kontot student utan att trigga några högnivålarm. Att angriparen lyckades knäcka just detta konto, samtidigt som root\-kontot förblev skyddat, berodde på att student\-kontot var konfigurerat med ett alldeles för svagt lösenord. Lösenordets bristande komplexitet gjorde att angriparen hann gissa rätt, trots att SSH-tjänstens inbyggda timer aktivt ströp hastigheten mellan varje inloggningsförsök och fördröjde attacken, medan samma konfiguration förhindrade root\-access.  
+Att intrånget inte upptäcktes och avbröts i tid berodde på brister i övervakningsarkitekturen, där Wazuhs standardregler tilldelade kontoisoleringsförsöken och enumerationerna en alldeles för låg allvarlighetsgrad. Med en larmnivå på Severity 5 drunknade de tidiga attackindikatorerna i bakgrundsbruset, vilket dolde den pågående incidenten för analytikern och fördröjde responstiden. Det saknades anpassade korrelationsregler för API-strukturen samt operativsystemsnära revisionsloggning (auditd) för att upptäcka otillåten filläsning av lösenordshashar.  
+Den fundamentala rotorsaken till att miljön överhuvudtaget driftsattes med dessa sårbarheter, svaga lösenord, låga larmnivåer och öppna nätverkskopplingar mellan containrarna var en total avsaknad av säkerhetstänk i arkitekturen enligt principerna för *Security by Design*. Säkerhet var inte en del av processen vid skapandet. Systemet driftsattes med standardinställningar för både operativsystem, Docker-nätverk och SIEM-regler. Det saknades en centraliserad härdnings- och konfigurationspolicy, vilket innebar att inga proaktiva sårbarhetskontroller, nätverksisoleringar eller regeljusteringar genomfördes före driftsättning. Säkerheten försökte istället läggas på i efterhand genom att implementera en SIEM-lösning, vilket inte åtgärdar den fundamentala avsaknaden av säkerhet i själva strukturen.
 
 ## **Wazuhs roll i utredningen och alternativa SIEM** 
 
-## Wazuh visade sig vara ett bra verktyg för efterhandanalys tack vare snabb indexering och loggcentralisering. Dess största styrka var förmågan att samla data kronologiskt, vilket gjorde det enkelt att spåra angripar-IP:n tvärs över nätverket via sökfrågor.  
+Wazuh visade sig vara ett bra verktyg för efterhandanalys tack vare snabb indexering och loggcentralisering. Dess största styrka var förmågan att samla data kronologiskt, vilket gjorde det enkelt att spåra angripar-IP:n tvärs över nätverket via sökfrågor.  
 ## Plattformen uppvisade dock tydliga begränsningar i sin förmåga till tidig detektion jämfört med kommersiella alternativ:
 
-* ## Splunk Enterprise Security (ES): Till skillnad från Wazuhs strikt regelbaserade motor, använder Splunk ES avancerad UEBA (User and Entity Behavior Analytics) för att bygga statistiska baslinjer över vad som är normalt beteende. I denna incident hade Splunk ES flaggat kontoenumerationerna mot /api/Users/X som en statistisk anomali i ett tidigt skede, långt innan de volymbaserade tröskelvärdena i Wazuhs standardregler uppnåddes.  
+* Splunk Enterprise Security (ES): Till skillnad från Wazuhs strikt regelbaserade motor, använder Splunk ES avancerad UEBA (User and Entity Behavior Analytics) för att bygga statistiska baslinjer över vad som är normalt beteende. I denna incident hade Splunk ES flaggat kontoenumerationerna mot /api/Users/X som en statistisk anomali i ett tidigt skede, långt innan de volymbaserade tröskelvärdena i Wazuhs standardregler uppnåddes.  
     
-* ## Elastic Security: Elastic erbjuder inbyggda maskininlärningsjobb (ML) i Kibana som är specialiserade på att upptäcka "low-and-slow"-attacker där en angripare sprider ut sina anrop över tid för att undvika fasta korrelations regler. Elastic Security integrerar dessutom nätverksdata (Packetbeat) mycket tätare än standard-Wazuh. Det hade gjort det möjligt att se den interna Layer 2/3-skanningen direkt i SIEM-gränssnittet utan externa verktyg som Wireshark.
+* Elastic Security: Elastic erbjuder inbyggda maskininlärningsjobb (ML) i Kibana som är specialiserade på att upptäcka "low-and-slow"-attacker där en angripare sprider ut sina anrop över tid för att undvika fasta korrelations regler. Elastic Security integrerar dessutom nätverksdata (Packetbeat) mycket tätare än standard-Wazuh. Det hade gjort det möjligt att se den interna Layer 2/3-skanningen direkt i SIEM-gränssnittet utan externa verktyg som Wireshark.
 
 
 ## **Konkreta och prioriterade förbättringsförslag**
 
-## 1\. Implementering av en strikt lösenordspolicy och IAM-härdning
+1\. Implementering av en strikt lösenordspolicy och IAM-härdning
 
-* ## Åtgärd: Byt omedelbart ut standardlösenorden på samtliga administrativa gränssnitt, inklusive Wazuh Dashboard som har svag lösenord och blir utsatt via andra containrar. Inför en policy som kräver MFA på alla administrativa paneler.   
+* Åtgärd: Byt omedelbart ut standardlösenorden på samtliga administrativa gränssnitt, inklusive Wazuh Dashboard som har svag lösenord och blir utsatt via andra containrar. Inför en policy som kräver MFA på alla administrativa paneler.   
     
-* ## Arbetsinsats/Kostnad: Cirka 2-3 arbetstimmar. 0 kr i licensavgifter.  
+* Arbetsinsats/Kostnad: Cirka 2-3 arbetstimmar. 0 kr i licensavgifter.  
     
-* ## Defensiv nytta: Extremt hög. Stänger sårbarheten där övervakningssystemet (SIEM) riskerade att bli helt övertaget av angriparen.
+* Defensiv nytta: Extremt hög. Stänger sårbarheten där övervakningssystemet (SIEM) riskerade att bli helt övertaget av angriparen.
 
 
 ## 2\. Härdning av SSH-infrastrukturen
 
-* ## Åtgärd: Inaktivera lösenordsautentisering helt i /etc/ssh/sshd\_config, tvinga fram kryptografiska ED25519-nycklar, flytta tjänsten till en godtycklig 5-siffrig port, samt driftsätta Fail2ban.  
+* Åtgärd: Inaktivera lösenordsautentisering helt i /etc/ssh/sshd\_config, tvinga fram kryptografiska ED25519-nycklar, flytta tjänsten till en godtycklig 5-siffrig port, samt driftsätta Fail2ban.  
     
-* ## Arbetsinsats/Kostnad: Cirka 2 arbetstimmar. 0 kr i licensavgifter.  
+* Arbetsinsats/Kostnad: Cirka 2 arbetstimmar. 0 kr i licensavgifter.  
     
-* ## Defensiv nytta: Extremt hög. Ersätter den nuvarande tidsfördröjningen med ett fullgott kryptografiskt skydd.
+* Defensiv nytta: Extremt hög. Ersätter den nuvarande tidsfördröjningen med ett fullgott kryptografiskt skydd.
 
 
 ## 3\. Nätverksisolering och eliminering av skugg-IT (Origin Bypass)
 
-* ## Åtgärd: Radera den publika portmappningen 3000:3000 i docker-compose.yml. Isolera offer-juice-shop i ett internt, slutet Docker-nätverk som endast kan nås via den definierade bryggan från nginx-proxy. Ta bort den interna nätverkskopplingen mellan webbservern och administrationsenheten offer-ssh. Implementera dessutom strikt nätverksisolering för Wazuh-infrastrukturen så att Wazuh Dashboard och Wazuh Manager inte kan nås från andra virtuella containrar i Docker-miljön, utan endast tillåter administration från specifika, betrodda värdadresser.  
+* Åtgärd: Radera den publika portmappningen 3000:3000 i docker-compose.yml. Isolera offer-juice-shop i ett internt, slutet Docker-nätverk som endast kan nås via den definierade bryggan från nginx-proxy. Ta bort den interna nätverkskopplingen mellan webbservern och administrationsenheten offer-ssh. Implementera dessutom strikt nätverksisolering för Wazuh-infrastrukturen så att Wazuh Dashboard och Wazuh Manager inte kan nås från andra virtuella containrar i Docker-miljön, utan endast tillåter administration från specifika, betrodda värdadresser.  
     
-* ## Arbetsinsats/Kostnad: Cirka 2 arbetstimmar. 0 kr i licensavgifter.
+* Arbetsinsats/Kostnad: Cirka 2 arbetstimmar. 0 kr i licensavgifter.
 
-* ## Defensiv nytta: Kritisk. Förhindrar *origin bypass*, stoppar lateral rörelse mellan containrar och skyddar övervakningssystemet från att bli manipulerat inifrån nätverket.
+* Defensiv nytta: Kritisk. Förhindrar *origin bypass*, stoppar lateral rörelse mellan containrar och skyddar övervakningssystemet från att bli manipulerat inifrån nätverket.
 
 
 ## 4\. Skapande av anpassade detektionsregler 
 
-* ## Åtgärd: Konfigurera Linux Audit-systemet (auditd) på offer-ssh att övervaka filsystemsanrop (läsning) mot /etc/passwd och /etc/shadow. Skriv anpassade XML-regler i /var/ossec/etc/rules/local\_rules.xml som omedelbart genererar ett Level 10-12-larm om dessa filer läses av en icke-root-användare. Skriv även en regel som höjer allvarlighetsgraden vid sekventiella API-anrop mot /api/Users/.  
+* Åtgärd: Konfigurera Linux Audit-systemet (auditd) på offer-ssh att övervaka filsystemsanrop (läsning) mot /etc/passwd och /etc/shadow. Skriv anpassade XML-regler i /var/ossec/etc/rules/local\_rules.xml som omedelbart genererar ett Level 10-12-larm om dessa filer läses av en icke-root-användare. Skriv även en regel som höjer allvarlighetsgraden vid sekventiella API-anrop mot /api/Users/.  
     
-* ## Arbetsinsats/Kostnad: Cirka 6–8 arbetstimmar. 0 kr i licensavgifter.  
+* Arbetsinsats/Kostnad: Cirka 6–8 arbetstimmar. 0 kr i licensavgifter.  
     
-* ## Defensiv nytta: Hög. Tillför semantisk förståelse och stänger blinda fläckar rörande intern lösenordsdumpning.
+* Defensiv nytta: Hög. Tillför semantisk förståelse och stänger blinda fläckar rörande intern lösenordsdumpning.
 
 
 ## 5\. Etablering av nätverksbaserad övervakning (NIDS) och applikationsloggning
 
-* ## Åtgärd: Installera en nätverksbaserad sensor (Suricata) på Docker-värden för att avlyssna trafiken på den interna virtuella bryggan. Montera även applikationsloggarna från Juice Shop direkt till en katalog som övervakas av en Wazuh-agent.  
+* Åtgärd: Installera en nätverksbaserad sensor (Suricata) på Docker-värden för att avlyssna trafiken på den interna virtuella bryggan. Montera även applikationsloggarna från Juice Shop direkt till en katalog som övervakas av en Wazuh-agent.  
     
-* ## Arbetsinsats/Kostnad: Cirka 10–14 arbetstimmar. 0 kr i licensavgifter.  
+* Arbetsinsats/Kostnad: Cirka 10–14 arbetstimmar. 0 kr i licensavgifter.  
     
-* ## Defensiv nytta: Medium till Hög. Stänger den blinda fläcken rörande Layer 2/3-skanningar samt ger SIEM-systemet insyn i applikationens interna felorsaker vid serverkrascher.  
+* Defensiv nytta: Medium till Hög. Stänger den blinda fläcken rörande Layer 2/3-skanningar samt ger SIEM-systemet insyn i applikationens interna felorsaker vid serverkrascher.  
   ---
 
 ## **BILAGOR**
