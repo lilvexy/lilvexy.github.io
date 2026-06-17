@@ -144,7 +144,7 @@ Incidenten stoppades snabbt genom att stänga porten och blockera angriparen, me
 
    * Syfte: Validerar att SIEM-systemet kan hantera hög genomströmning (EPS) och filtrera bort normalt beteende från faktiska attacker.
 
-## **Befintlig regeluppsättning**
+### **Befintlig regeluppsättning**
 
 Wazuh har ett omfattande inbyggt bibliotek med tusentals standardregler laddade i sin regelmotor. Dessa regler ligger ständigt aktiva i bakgrunden och analyserar strömmande loggdata baserat på allvarlighetsgrad (Severity 0–15) och MITRE ATT\&CK-ramverket. Under denna specifika incident var det följande standardregler som triggades och genererade alerten.
 
@@ -165,7 +165,7 @@ Wazuh har ett omfattande inbyggt bibliotek med tusentals standardregler laddade 
 ## **A3. Identifikation**
 
 
-## Analysen genomfördes systematiskt för att gå från enskilda larm till en fullständig kartläggning av angriparens rörelser:
+### Analysen genomfördes systematiskt för att gå från enskilda larm till en fullständig kartläggning av angriparens rörelser:
 
 1. Observation (Anomalidetektering): Incidenten initierades när Wazuhs regelmotor flaggade för ett kritiskt korrelationslarm (Rule 31151, Severity 10). Detta indikerade databasskanning och pågående webbattacker.
 
@@ -181,7 +181,7 @@ Wazuh har ett omfattande inbyggt bibliotek med tusentals standardregler laddade 
 
 ## **Tidslinje och Händelseförlopp i Wazuh**
 
-## Den sammanställda tidslinjen visar hur angriparen agerade mot infrastrukturen den 16 maj 2026\.
+### Den sammanställda tidslinjen visar hur angriparen agerade mot infrastrukturen den 16 maj 2026\.
 
 | Tidsstämpel/UTC| Loggkälla / Agent | Event / Detekterad aktivitet | Wazuh Rule ID | Severity |
 | ----- | ----- | ----- | ----- | ----- |
@@ -226,9 +226,7 @@ Aktiv reconnaissance mot den interna Docker-bryggan (Layer 2/3-mönster) identif
 
 ## **Queries körda i Wazuh Dashboard**
 
-## 
-
-## Följande queries användes för att isolera artefakter och verifiera hypoteserna:
+Följande queries användes för att isolera artefakter och verifiera hypoteserna:
 
 * Query 1: agent.name:"nginx-proxy"
 
@@ -262,7 +260,7 @@ Aktiv reconnaissance mot den interna Docker-bryggan (Layer 2/3-mönster) identif
 
 ## **Bedömning av Omfattning och Påverkan**
 
-## Påverkade system:
+### Påverkade system:
 
 * nginx-proxy: Loggade delar av webbattackerna.
 
@@ -291,25 +289,25 @@ Aktiv reconnaissance mot den interna Docker-bryggan (Layer 2/3-mönster) identif
 
 ## **Skärmdumpar** 
 
-* ## Skärmdump 1: SQL-injection-detektering (Rule 31164\) – *Markering kring URL-kodad UNION-payload mot /rest/products/search.*
+*  Skärmdump 1: SQL-injection-detektering (Rule 31164\) – *Markering kring URL-kodad UNION-payload mot /rest/products/search.*
 
   ![][image2]
 
-* ## Skärmdump 2: Korrelations-larm för multipla attacker (Rule 31151\) – *Visar aggregering av sekventiella 400-felkoder från angripar-IP.*
+* Skärmdump 2: Korrelations-larm för multipla attacker (Rule 31151\) – *Visar aggregering av sekventiella 400-felkoder från angripar-IP.*
 
   ![][image3]
 
-* ## Skärmdump 3: SSH Brute Force och lyckad inloggning (Rule 5760  & 5715\) 
+* Skärmdump 3: SSH Brute Force och lyckad inloggning (Rule 5760  & 5715\) 
 
   ## *![][image4]*
 
 ![][image5]
 
-## *Visar misslyckade autentiseringsförsök av root, samt godkänt autentisering för kontot “student”.*
+ *Visar misslyckade autentiseringsförsök av root, samt godkänt autentisering för kontot “student”.*
 
 ## 
 
-* ## Skärmdump 4: HTTP 500 Internal Server Error.
+* Skärmdump 4: HTTP 500 Internal Server Error.
 
 ## ![][image6]
 
@@ -317,7 +315,7 @@ Aktiv reconnaissance mot den interna Docker-bryggan (Layer 2/3-mönster) identif
 
 ## **Kortsiktig inneslutning**  
    
-## De omedelbara åtgärderna fokuserade på att stoppa den pågående attacken och begränsa spridningen:
+### De omedelbara åtgärderna fokuserade på att stoppa den pågående attacken och begränsa spridningen:
 
  * Brandväggsblockering (IP-spärr): Angriparens verifierade käll-IP (172.18.0.1) blockerades omedelbart via nätverksregler för att bryta dennes externa anslutning.  
     
