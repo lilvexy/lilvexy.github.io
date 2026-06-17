@@ -279,10 +279,10 @@ Följande queries användes för att isolera artefakter och verifiera hypotesern
 
     
 
-* ## Incidentstatus: Incidenten klassificerades som *Aktiv* fram till dess att de akuta inneslutningsåtgärderna verkställdes.
+* Incidentstatus: Incidenten klassificerades som *Aktiv* fram till dess att de akuta inneslutningsåtgärderna verkställdes.
 
 
-* ## **Allvarlighetsgrad**: Hög. Motiveras av en kombination av lyckad exfiltration av användardata på applikationsnivå samt systemkompromettering, intern nätverkskartläggning (pivotering) och datainsamling för exfiltrering via SSH.
+* **Allvarlighetsgrad**: Hög. Motiveras av en kombination av lyckad exfiltration av användardata på applikationsnivå samt systemkompromettering, intern nätverkskartläggning (pivotering) och datainsamling för exfiltrering via SSH.
 
 
 ## **Skärmdumpar** 
